@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { addContacts, getContacts } from '../../redux/contactsSlice';
-import { nanoid } from 'nanoid';
 import { Form, Label, Input, Button } from './ContactForm.styled';
+import { useState } from 'react';
+import { nanoid } from 'nanoid';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts } from 'redux/contactsSlice';
+import { addContact } from 'redux/contactsSlice';
 
 export const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
-  const contacts = useSelector(getContacts);
   const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
 
   const handleInputChange = e => {
     const { name, value } = e.currentTarget;
@@ -25,26 +26,25 @@ export const ContactForm = () => {
     }
   };
 
-  const addContact = (name, number) => {
-    if (checkDoubleContact(name)) {
-      alert(`${name} is already in your contacts!`);
-      return;
+  const addNewContact = (name, number) => {
+    if (checkAvailability(name)) {
+      return alert(`${name} is already in contacts`);
     }
+
     const newContact = {
       id: nanoid(),
       name,
       number,
     };
-    dispatch(addContacts(newContact));
+    dispatch(addContact(newContact));
   };
 
-  const checkDoubleContact = name => {
-    return contacts.find(contact => contact.name === name);
-  };
+  const checkAvailability = name =>
+    contacts.find(contact => contact.name === name);
 
   const handleSubmit = e => {
     e.preventDefault();
-    addContact(name, number);
+    addNewContact(name, number);
     setName('');
     setNumber('');
   };
